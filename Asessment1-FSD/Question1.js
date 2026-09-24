@@ -1,17 +1,6 @@
 const EventEmitter = require("events");
 
-class SessionManager extends EventEmitter {
-
-    trigger(command, ...args) {
-        if (command === "greet" || command === "exit") {
-            this.emit(command, ...args);
-        } else {
-            console.log(`Unknown event: ${command}`);
-        }
-    }
-}
-
-const session = new SessionManager();
+const session = new EventEmitter();
 
 session.on("greet", (username) => {
     console.log(`Hello, ${username}! Welcome.`);
@@ -29,14 +18,22 @@ session.on("error", (message) => {
     console.log(`Error: ${message}`);
 });
 
-session.trigger("greet", "Akshara");
-session.trigger("greet", "Rahul");
-session.trigger("greet", "Ananya");
+function trigger(command, ...args) {
+    if (command === "greet" || command === "exit") {
+        session.emit(command, ...args);
+    } else {
+        console.log(`Unknown event: ${command}`);
+    }
+}
+
+trigger("greet", "Akshara");
+trigger("greet", "Rahul");
+trigger("greet", "Ananya");
 
 console.log("Greet listener count:", session.listenerCount("greet"));
 
-session.trigger("exit", 0);
+trigger("exit", 0);
 
-session.trigger("login");
+trigger("login");
 
 session.emit("error", "Session error occurred.");
